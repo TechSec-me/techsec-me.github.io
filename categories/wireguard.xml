@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TechSec.me (Posts about wireguard)</title><link>https://techsec.me/</link><description></description><atom:link href="https://techsec.me/categories/wireguard.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:info@techsec.me"&gt;TechSec&lt;/a&gt; </copyright><lastBuildDate>Tue, 10 Mar 2020 14:06:36 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>setup wireguard vpn</title><link>https://techsec.me/home/setup-wireguard-vpn/</link><dc:creator>TechSec</dc:creator><description>&lt;div&gt;&lt;h6&gt;WireGuard is a fast, easy to configure VPN.  If you have at least one node with a public IP all devices will be able to communicate with each other regardless of NAT or port forwards.  The setup below has three nodes, one VPS node with a public IP and two additional nodes, both behind NAT.&lt;/h6&gt;
+&lt;p&gt;&lt;img alt="" src="https://techsec.me/home/setup-wireguard-vpn/wg00.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Stage 1: Install WireGuard on our clients.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I'm not going to re-produce the install procedure, WireGuard have very good documentation &lt;a href="https://www.wireguard.com/install/" title="WireGuard Install Guide"&gt;available here&lt;/a&gt;.  I installed on three systems, two Ubuntu 19.10 Servers and one CentOS 8.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ubnt-01 (Local VM)&lt;/li&gt;
+&lt;li&gt;ubnt-02 (VPS with WAN IP)&lt;/li&gt;
+&lt;li&gt;cent-01 (Local VM)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Once installed you can run &lt;code&gt;sudo wg&lt;/code&gt; to check if it's installed, you will get an error if it's not.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://techsec.me/home/setup-wireguard-vpn/"&gt;Read more…&lt;/a&gt; (4 min remaining to read)&lt;/p&gt;&lt;/div&gt;</description><category>linux</category><category>security</category><category>vpn</category><category>wireguard</category><guid>https://techsec.me/home/setup-wireguard-vpn/</guid><pubDate>Tue, 11 Feb 2020 22:01:42 GMT</pubDate></item></channel></rss>

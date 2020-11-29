@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TechSec.me (Posts about web)</title><link>https://techsec.me/</link><description></description><atom:link href="https://techsec.me/categories/web.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:info@techsec.me"&gt;TechSec&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Mar 2020 17:33:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>apache ssl using a windows ca</title><link>https://techsec.me/home/apache-ssl-using-a-windows-ca/</link><dc:creator>TechSec</dc:creator><description>&lt;div&gt;&lt;h6&gt;If you've a Windows Domain with a Certificate Authority in place, this procedure will demonstrate how to issue an SSL certificate for an internal Apache server running Linux, CentOS in this case.  In the example below we enable https on an intranet.&lt;/h6&gt;
+&lt;p&gt;&lt;strong&gt;Stage 1: Generating a CSR for your virtual host.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;First we generate a key and certificate request for our intranet using openssl on the Linux server.  We can later copy the resulting .csr to our Windows CA to generate the certificate from.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;sudo mkdir /etc/httpd/ssl
+&lt;span class="nb"&gt;cd&lt;/span&gt; /etc/httpd/ssl
+sudo openssl req -newkey rsa:2048 -nodes -keyout intranet.int.techsec.me.key -out intranet.int.techsec.me.csr
+&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;img alt="" src="https://techsec.me/home/apache-ssl-using-a-windows-ca/ssl-ca1.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://techsec.me/home/apache-ssl-using-a-windows-ca/"&gt;Read more…&lt;/a&gt; (3 min remaining to read)&lt;/p&gt;&lt;/div&gt;</description><category>linux</category><category>security</category><category>web</category><category>windows server</category><guid>https://techsec.me/home/apache-ssl-using-a-windows-ca/</guid><pubDate>Sat, 25 Jan 2020 22:00:12 GMT</pubDate></item></channel></rss>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>apache ssl using a windows ca | TechSec.me</title>
+<link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#517850">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://techsec.me/home/apache-ssl-using-a-windows-ca/">
+<!--[if lt IE 9]><script src="../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="TechSec">
+<link rel="next" href="../secure-ssh-access-using-keys/" title="secure ssh access using keys" type="text/html">
+<meta property="og:site_name" content="TechSec.me">
+<meta property="og:title" content="apache ssl using a windows ca">
+<meta property="og:url" content="https://techsec.me/home/apache-ssl-using-a-windows-ca/">
+<meta property="og:description" content="If you've a Windows Domain with a Certificate Authority in place, this procedure will demonstrate how to issue an SSL certificate for an internal Apache server running Linux, CentOS in this case.  In ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-01-25T22:00:12Z">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="security">
+<meta property="article:tag" content="web">
+<meta property="article:tag" content="windows server">
+</head>
+<body>
+    <a href="#page-content" class="sr-only sr-only-focusable">Skip to main content</a>
+    
+    <section class="social"><ul>
+<li><a href="../../index.html" title="Home"><i class="fa fa-home"></i></a></li>
+            <li><a href="../../archive.html" title="Archives"><i class="fa fa-folder-open"></i></a></li>
+            <li><a href="../../categories/index.html" title="Tags"><i class="fa fa-tags"></i></a></li>
+            <li><a href="../../rss.xml" title="RSS"><i class="fa fa-rss"></i></a></li>
+            <li><a href="https://techsec.me" title="About me"><i class="fa fa-user"></i></a></li>
+            <li><a href="https://twitter.com/TechSec_me" title="My Twitter"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://github.com/TechSec-me" title="My Github"><i class="fab fa-github"></i></a></li>
+    
+    
+
+        </ul></section><section class="page-content"><div class="content" rel="main">
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">apache ssl using a windows ca</a></h1>
+
+        <div class="metadata">
+            <p class="dateline"><a href="." rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-01-25T22:00:12Z" itemprop="datePublished" title="2020-01-25 22:00">2020-01-25 22:00</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                    TechSec
+            </span></p>
+            
+        <p class="sourceline"><a href="index.md" class="sourcelink"><i class="fa fa-file-code"></i> Source</a></p>
+
+            
+
+            
+    <div class="tags">
+<h3 class="metadata-title">
+<i class="fa fa-tags"></i> Tags:</h3>
+        <ul itemprop="keywords" class="tags-ul">
+<li><a class="tag p-category" href="../../categories/linux/" rel="tag">linux</a></li>
+            <li><a class="tag p-category" href="../../categories/security/" rel="tag">security</a></li>
+            <li><a class="tag p-category" href="../../categories/web/" rel="tag">web</a></li>
+            <li><a class="tag p-category" href="../../categories/windows-server/" rel="tag">windows server</a></li>
+        </ul>
+</div>
+
+        </div>
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<h6>If you've a Windows Domain with a Certificate Authority in place, this procedure will demonstrate how to issue an SSL certificate for an internal Apache server running Linux, CentOS in this case.  In the example below we enable https on an intranet.</h6>
+<p><strong>Stage 1: Generating a CSR for your virtual host.</strong></p>
+<p>First we generate a key and certificate request for our intranet using openssl on the Linux server.  We can later copy the resulting .csr to our Windows CA to generate the certificate from.</p>
+<pre class="code literal-block"><span></span>sudo mkdir /etc/httpd/ssl
+<span class="nb">cd</span> /etc/httpd/ssl
+sudo openssl req -newkey rsa:2048 -nodes -keyout intranet.int.techsec.me.key -out intranet.int.techsec.me.csr
+</pre>
+
+
+<p><img alt="" src="ssl-ca1.png"></p>
+<!-- TEASER_END -->
+
+<p><strong>Stage 2: Generate the certificate on our Windows CA</strong></p>
+<p>Now we copy the cert request file to our Windows Certificate Authority.  We can't use the CA mmc to generate the certificate as it does not support converting the openssl .csr format so instead we can use Microsoft's 'certreq' command line tool to do this.</p>
+<pre class="code literal-block"><span></span><span class="nb">cd </span><span class="n">c</span><span class="err">:</span><span class="p">\</span><span class="n">crts</span>
+<span class="n">certreq</span> <span class="n">-submit</span> <span class="n">-attrib</span> <span class="s2">"CertificateTemplate:WebServer"</span> <span class="p">.\</span><span class="n">intranet</span><span class="p">.</span><span class="n">int</span><span class="p">.</span><span class="n">techsec</span><span class="p">.</span><span class="n">me</span><span class="p">.</span><span class="n">csr</span>
+</pre>
+
+
+<p><img alt="" src="ssl-ca2.png"></p>
+<p>We then export the generated certificate and the intermediary certificate from the CA mmc in base 64 format which we can copy to our Linux server.</p>
+<p><img alt="" src="ssl-ca3.png"></p>
+<p>Do the same for the CA's cert which we'll use as the intermediary certificate.  Copy them over to the Linux server.</p>
+<p><strong>Stage 3: Configuring our virtual host for https</strong></p>
+<p>Now that we have the Windows CA generated .cer files on our Apache server we should have all 3 files we need to set up https on our site.  The intranet cert, the intermediary cert and the private key.</p>
+<pre class="code literal-block"><span></span><span class="nb">cd</span> /etc/httpd/ssl
+<span class="o">[</span>admin01@wb-01 ssl<span class="o">]</span>$ ls -la
+-rw-r--r--. <span class="m">1</span> root root <span class="m">1295</span> Jan <span class="m">24</span> <span class="m">22</span>:20 intermediary.techsec.me.cer
+-rw-r--r--. <span class="m">1</span> root root <span class="m">1949</span> Jan <span class="m">24</span> <span class="m">22</span>:19 intranet.int.techsec.me.cer
+-rw-------. <span class="m">1</span> root root <span class="m">1708</span> Jan <span class="m">24</span> <span class="m">21</span>:06 intranet.int.techsec.me.key
+</pre>
+
+
+<p>We now edit our /etc/httpd/sites-enabled/intranet.int.techsec.me.conf Virtual Host config file to enable SSL for the site and point to our certificate files.  Restart Apache once this has been done, below are the highlighted changes.</p>
+<p><img alt="" src="ssl-ca4.png"></p>
+<p>And here we can see the testing of the site</p>
+<p>Before SSL is enabled:</p>
+<p><img alt="" src="ssl-ca5.png"></p>
+<p>After SSL is enabled:</p>
+<p><img alt="" src="ssl-ca6.png"></p>
+<p>There we have it, now all your Windows domain joined clients can connect over https to your internal webserver without getting cert errors.</p>
+<ul>
+<li>Note if you didn't do it already you need to create an A Record in your Windows DNS to point intranet.int.techsec.me to the Linux server.</li>
+<li>Note also, permissions and properties are important on the files within the /etc/httpd/ssl folder, if you have issues starting Apache double check these inc the SELinux attributes.</li>
+<li>Bonus note, if you're given a .p7b cert from the CA you can extract the required certs using openssl e.g. openssl pkcs7 -inform DER -outform PEM -in intranet.int.techsec.me.p7b -print_certs</li>
+</ul>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="next">
+                <a href="../secure-ssh-access-using-keys/" rel="next" title="secure ssh access using keys">Next post</a>
+            </li>
+        </ul></nav></aside></article><footer id="footer"><p>Contents © 2020         <a href="mailto:info@techsec.me">TechSec</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         </p>
+            
+        </footer>
+</div>
+    </section><script src="../../assets/js/all-nocdn.js"></script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates --><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+    }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-156247465-1"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-156247465-1');
+</script>
+</body>
+</html>

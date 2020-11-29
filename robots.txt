@@ -1,0 +1,4 @@
+Sitemap: https://techsec.me/sitemapindex.xml
+
+User-Agent: *
+Host: techsec.me

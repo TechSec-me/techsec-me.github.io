@@ -1,1 +1,216 @@
-WIP, updates coming soon
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="A space for IT and IT Security related content and guides.">
+<meta name="viewport" content="width=device-width">
+<title>TechSec.me</title>
+<link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#517850">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://techsec.me/">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="home/run-nebula-as-a-service/" type="text/html">
+</head>
+<body>
+    <a href="#page-content" class="sr-only sr-only-focusable">Skip to main content</a>
+    
+    <section class="social"><ul>
+<li><a href="#" title="Home"><i class="fa fa-home"></i></a></li>
+            <li><a href="archive.html" title="Archives"><i class="fa fa-folder-open"></i></a></li>
+            <li><a href="categories/index.html" title="Tags"><i class="fa fa-tags"></i></a></li>
+            <li><a href="rss.xml" title="RSS"><i class="fa fa-rss"></i></a></li>
+            <li><a href="https://techsec.me" title="About me"><i class="fa fa-user"></i></a></li>
+            <li><a href="https://twitter.com/TechSec_me" title="My Twitter"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://github.com/TechSec-me" title="My Github"><i class="fab fa-github"></i></a></li>
+    
+    
+
+        </ul></section><section class="page-content"><div class="content" rel="main">
+            
+
+    
+
+
+    
+<div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/run-nebula-as-a-service/" class="u-url">run nebula as a service</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/run-nebula-as-a-service/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-03-20T20:30:33Z" title="2020-03-20 20:30">2020-03-20 20:30</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>I recently looked at using Nebula to create a private network between a few devices, <a href="https://techsec.me/home/setting-up-nebula-overlay-network/" title="TechSec.me - Setting up Nebula">my post here</a> goes through the setup process.  <a href="https://github.com/slackhq/nebula" title="Nebula - GitHub Link">Nebula </a> (from the people that brought you Slack) turned out to be a great fit for my requirement so below I'm detailing how to setup devices to automatically connect to the overlay network.  I will skip over the install as I covered that in my previous post.</h6>
+<p><strong>Stage 1: Generate the certs for all devices</strong></p>
+<ul>
+<li>dc-02 - 192.168.99.60 (VPS with WAN IP, Lighthouse)</li>
+<li>pc-01 - 192.168.99.61 (Local VM on NAT)</li>
+<li>pc-02 - 192.168.99.62 (Local VM on NAT)</li>
+</ul>
+<p class="more"><a href="home/run-nebula-as-a-service/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/setting-up-nebula-overlay-network/" class="u-url">setting up nebula overlay network</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/setting-up-nebula-overlay-network/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-03-05T21:05:21Z" title="2020-03-05 21:05">2020-03-05 21:05</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>I really like WireGuard as a fast, simple and secure VPN option.  Recently I have a requirement to be able to add and remove nodes to a VPN on a semi regular basis and as I do not have any sort of config manager in place (yet!) I need an option that doesn't require making changes on all existing nodes.  Nebula (from the people that brought you Slack) is one such option and below is how I've set it up, it's great in that I can add a node, do the bit of work I need to do with it then remove it a few weeks later and I don't need to make config changes on all the other nodes.</h6>
+<p><strong>Stage 1: Setup Nebula</strong></p>
+<p><a href="https://github.com/slackhq/nebula" title="Nebula - GitHub Link">Nebula is provided as source</a> or as <a href="https://github.com/slackhq/nebula/releases" title="Nebula - Binaries">downloadable binaries</a>, there is no pre-built package or installer yet so for the initial setup I'll be configuring three nodes, a Linux VM with a public IP (Nebula refer to this as a Lighthouse) and two internal VMs behind NAT, one Windows Server at home and a Linux VM on a laptop.</p>
+<ul>
+<li>srv1 - 192.168.99.100 (VPS with WAN IP, Lighthouse)</li>
+<li>ka-01 - 192.168.99.101 (Local VM on NAT)</li>
+<li>dc-01 - 192.168.99.150 (Local VM on NAT)</li>
+</ul>
+<p class="more"><a href="home/setting-up-nebula-overlay-network/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/zabbix-4-server-installation/" class="u-url">zabbix 4 server installation</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/zabbix-4-server-installation/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-03-01T22:03:44Z" title="2020-03-01 22:03">2020-03-01 22:03</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>Zabbix is a great monitoring solution and is ideal for environments where you might not be adding devices all that often such as SMEs.  What I mean by this is it's simple to add devices via the GUI, where as with a solution like Nagios with it's config file management it can be a bit time consuming especially if you don't interact with the config on a regular basis.</h6>
+<p>I plan to do a few quick guides around Zabbix, my aim is to install it and configure it to monitor a few servers and services I have running so each quick guide will build on top of the other.  First up is the install procedure, I'm using a Ubuntu 19.10 Server VM as the OS (40GB disk, 2GB RAM, 1vCPU).</p>
+<p><strong>Stage 1: System Install.</strong></p>
+<p>Starting with a clean install of Ubuntu 19.10 and ran updates we can then look at the Zabbix <a href="https://www.zabbix.com/documentation/current/manual/installation/requirements" title="Zabbix system requirements">system requirements</a>.  Current version at time of writing is 4.4 and I'll install with MariaDB and Apache.</p>
+<p>Install MariaDB and configure:</p>
+<pre class="code literal-block"><span></span>sudo apt install mariadb-server
+sudo systemctl <span class="nb">enable</span> mariadb
+sudo systemctl start mariadb
+
+<span class="c1"># We run this to set a root password and remove root remote access etc.</span>
+sudo mysql_secure_installation
+</pre>
+
+
+<p class="more"><a href="home/zabbix-4-server-installation/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/setup-wireguard-vpn/" class="u-url">setup wireguard vpn</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/setup-wireguard-vpn/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-02-11T22:01:42Z" title="2020-02-11 22:01">2020-02-11 22:01</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>WireGuard is a fast, easy to configure VPN.  If you have at least one node with a public IP all devices will be able to communicate with each other regardless of NAT or port forwards.  The setup below has three nodes, one VPS node with a public IP and two additional nodes, both behind NAT.</h6>
+<p><img alt="" src="home/setup-wireguard-vpn/wg00.png"></p>
+<p><strong>Stage 1: Install WireGuard on our clients.</strong></p>
+<p>I'm not going to re-produce the install procedure, WireGuard have very good documentation <a href="https://www.wireguard.com/install/" title="WireGuard Install Guide">available here</a>.  I installed on three systems, two Ubuntu 19.10 Servers and one CentOS 8.</p>
+<ul>
+<li>ubnt-01 (Local VM)</li>
+<li>ubnt-02 (VPS with WAN IP)</li>
+<li>cent-01 (Local VM)</li>
+</ul>
+<p>Once installed you can run <code>sudo wg</code> to check if it's installed, you will get an error if it's not.</p>
+<p class="more"><a href="home/setup-wireguard-vpn/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/extend-volume-to-new-physical-disk-with-lvm/" class="u-url">extend volume to new physical disk with lvm</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/extend-volume-to-new-physical-disk-with-lvm/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-02-06T21:59:02Z" title="2020-02-06 21:59">2020-02-06 21:59</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>The initial OS was installed using LVM so extending it is relativly straight forward.  The steps below describe the process, here the Ubuntu server / was running low on space.  I added a new disk and extended the existing volume to use the new disk increasing the free space on root /</h6>
+<p><img alt="" src="home/extend-volume-to-new-physical-disk-with-lvm/lvm8.png"></p>
+<p>Example image above shows an initial storage configuration on the left.  The right shows additional storage added later and used to extend existing volume.</p>
+<p class="more"><a href="home/extend-volume-to-new-physical-disk-with-lvm/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/secure-ssh-access-using-keys/" class="u-url">secure ssh access using keys</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/secure-ssh-access-using-keys/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-01-30T22:00:32Z" title="2020-01-30 22:00">2020-01-30 22:00</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>In order to secure SSH access to a newly deployed Linux server it is highly recommended you disable password based SSH logins and instead force key based logins as it practically eliminates the possibility of a brute force login attack being successful.  There are a few steps to setting this up which I go through below.</h6>
+<p><strong>Stage 1: Account Setup</strong></p>
+<p>We're assuming the only account on first boot is root so first thing we need to do is create a new user for remote access and give it sudo privileges.</p>
+<pre class="code literal-block"><span></span>useradd -m srvadmin
+passwd srvadmin
+usermod -a -G sudo srvadmin
+</pre>
+
+
+<p><img alt="" src="home/secure-ssh-access-using-keys/ssh1.png"></p>
+<p class="more"><a href="home/secure-ssh-access-using-keys/">Read more…</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="home/apache-ssl-using-a-windows-ca/" class="u-url">apache ssl using a windows ca</a></h1>
+        <div class="metadata">
+            <p class="dateline"><a href="home/apache-ssl-using-a-windows-ca/" rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-01-25T22:00:12Z" title="2020-01-25 22:00">2020-01-25 22:00</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                TechSec
+            </span></p>
+        </div>
+    </header><div class="p-summary entry-summary">
+    <div>
+<h6>If you've a Windows Domain with a Certificate Authority in place, this procedure will demonstrate how to issue an SSL certificate for an internal Apache server running Linux, CentOS in this case.  In the example below we enable https on an intranet.</h6>
+<p><strong>Stage 1: Generating a CSR for your virtual host.</strong></p>
+<p>First we generate a key and certificate request for our intranet using openssl on the Linux server.  We can later copy the resulting .csr to our Windows CA to generate the certificate from.</p>
+<pre class="code literal-block"><span></span>sudo mkdir /etc/httpd/ssl
+<span class="nb">cd</span> /etc/httpd/ssl
+sudo openssl req -newkey rsa:2048 -nodes -keyout intranet.int.techsec.me.key -out intranet.int.techsec.me.csr
+</pre>
+
+
+<p><img alt="" src="home/apache-ssl-using-a-windows-ca/ssl-ca1.png"></p>
+<p class="more"><a href="home/apache-ssl-using-a-windows-ca/">Read more…</a></p>
+</div>
+    </div>
+    </article>
+</div>
+
+
+
+
+
+
+
+             
+        <footer id="footer"><p>Contents © 2020         <a href="mailto:info@techsec.me">TechSec</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         </p>
+            
+        </footer>
+</div>
+    </section><script src="assets/js/all-nocdn.js"></script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates --><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+    }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-156247465-1"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-156247465-1');
+</script>
+</body>
+</html>

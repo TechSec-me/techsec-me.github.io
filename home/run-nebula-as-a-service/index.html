@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>run nebula as a service | TechSec.me</title>
+<link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#517850">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://techsec.me/home/run-nebula-as-a-service/">
+<!--[if lt IE 9]><script src="../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="TechSec">
+<link rel="prev" href="../setting-up-nebula-overlay-network/" title="setting up nebula overlay network" type="text/html">
+<meta property="og:site_name" content="TechSec.me">
+<meta property="og:title" content="run nebula as a service">
+<meta property="og:url" content="https://techsec.me/home/run-nebula-as-a-service/">
+<meta property="og:description" content="I recently looked at using Nebula to create a private network between a few devices, my post here goes through the setup process.  Nebula  (from the people that brought you Slack) turned out to be a g">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-03-20T20:30:33Z">
+<meta property="article:tag" content="nebula">
+<meta property="article:tag" content="networking">
+<meta property="article:tag" content="sysadmin">
+<meta property="article:tag" content="vpn">
+</head>
+<body>
+    <a href="#page-content" class="sr-only sr-only-focusable">Skip to main content</a>
+    
+    <section class="social"><ul>
+<li><a href="../../index.html" title="Home"><i class="fa fa-home"></i></a></li>
+            <li><a href="../../archive.html" title="Archives"><i class="fa fa-folder-open"></i></a></li>
+            <li><a href="../../categories/index.html" title="Tags"><i class="fa fa-tags"></i></a></li>
+            <li><a href="../../rss.xml" title="RSS"><i class="fa fa-rss"></i></a></li>
+            <li><a href="https://techsec.me" title="About me"><i class="fa fa-user"></i></a></li>
+            <li><a href="https://twitter.com/TechSec_me" title="My Twitter"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://github.com/TechSec-me" title="My Github"><i class="fab fa-github"></i></a></li>
+    
+    
+
+        </ul></section><section class="page-content"><div class="content" rel="main">
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">run nebula as a service</a></h1>
+
+        <div class="metadata">
+            <p class="dateline"><a href="." rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-03-20T20:30:33Z" itemprop="datePublished" title="2020-03-20 20:30">2020-03-20 20:30</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                    TechSec
+            </span></p>
+            
+        <p class="sourceline"><a href="index.md" class="sourcelink"><i class="fa fa-file-code"></i> Source</a></p>
+
+            
+
+            
+    <div class="tags">
+<h3 class="metadata-title">
+<i class="fa fa-tags"></i> Tags:</h3>
+        <ul itemprop="keywords" class="tags-ul">
+<li><a class="tag p-category" href="../../categories/nebula/" rel="tag">nebula</a></li>
+            <li><a class="tag p-category" href="../../categories/networking/" rel="tag">networking</a></li>
+            <li><a class="tag p-category" href="../../categories/sysadmin/" rel="tag">sysadmin</a></li>
+            <li><a class="tag p-category" href="../../categories/vpn/" rel="tag">vpn</a></li>
+        </ul>
+</div>
+
+        </div>
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<h6>I recently looked at using Nebula to create a private network between a few devices, <a href="https://techsec.me/home/setting-up-nebula-overlay-network/" title="TechSec.me - Setting up Nebula">my post here</a> goes through the setup process.  <a href="https://github.com/slackhq/nebula" title="Nebula - GitHub Link">Nebula </a> (from the people that brought you Slack) turned out to be a great fit for my requirement so below I'm detailing how to setup devices to automatically connect to the overlay network.  I will skip over the install as I covered that in my previous post.</h6>
+<p><strong>Stage 1: Generate the certs for all devices</strong></p>
+<ul>
+<li>dc-02 - 192.168.99.60 (VPS with WAN IP, Lighthouse)</li>
+<li>pc-01 - 192.168.99.61 (Local VM on NAT)</li>
+<li>pc-02 - 192.168.99.62 (Local VM on NAT)</li>
+</ul>
+<!-- TEASER_END --><pre class="code literal-block"><span></span>./nebula-cert sign -name <span class="s2">"dc-02"</span> -ip <span class="s2">"192.168.99.60/24"</span>
+./nebula-cert sign -name <span class="s2">"pc-01"</span> -ip <span class="s2">"192.168.99.61/24"</span>
+./nebula-cert sign -name <span class="s2">"pc-02"</span> -ip <span class="s2">"192.168.99.62/24"</span>
+</pre>
+
+
+<p><strong>Stage 2: Set nebula to run as a service on Windows devices</strong></p>
+<p>Now we copy the certs to the respective devices where we already have the nebula binary downloaded and our .yaml config file.  Running the following command sets up nebula to run as a service.  The <code>-service</code> options are <code>["start" "stop" "restart" "install" "uninstall"]</code></p>
+<pre class="code literal-block"><span></span>PS C:\Program Files\nebula&gt; .\nebula.exe -config "C:\Program Files\nebula\dc-02.yaml" -service install
+</pre>
+
+
+<p><img alt="" src="neb-auto01.png"></p>
+<p><strong>Stage 3: Set nebula to run as a service on Linux devices</strong></p>
+<p>In the previous post I had setup a Linux VPS (srv1) on my nebula network as the Lighthouse, now I want to set it to automatically connect so we need to create a systemd config for this to happen and we'll use the existing nebula config file and certs.</p>
+<ul>
+<li>srv1 - 192.168.99.100 (VPS with WAN IP, Lighthouse)</li>
+</ul>
+<p>First we create a simple .sh file in <code>/usr/bin/nebula-run.sh</code> containing the command to start nebula using our config file.  We'll also send any output to /var/logs which will help troubleshooting efforts if needed.  Contents of our file:</p>
+<pre class="code literal-block"><span></span>/etc/nebula/nebula -config /etc/nebula/srv1-config.yaml <span class="p">&amp;</span>&gt;&gt;/var/log/nebula-err.log
+</pre>
+
+
+<p>then:</p>
+<pre class="code literal-block"><span></span>sudo chmod +x /usr/bin/nebula-run.sh
+</pre>
+
+
+<p>Now we create a systemd unit file to allow the system run our script as a service.  We create the following <code>sudo vi /etc/systemd/system/nebula-run.service</code> with the content below:</p>
+<pre class="code literal-block"><span></span><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Run Nebula as a service.
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">ExecStart</span><span class="o">=</span>/bin/bash /usr/bin/nebula-run.sh
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</pre>
+
+
+<p>then:</p>
+<pre class="code literal-block"><span></span>sudo chmod <span class="m">644</span> /etc/systemd/system/nebula-run.service
+sudo systemctl <span class="nb">enable</span> nebula-run
+</pre>
+
+
+<p>You can just start the service uses systemctl but I rebooted the server as a test, once the server came back up, all devices on the nebula network could communicate and the service on the lighthouse showed up as running.</p>
+<p><img alt="" src="neb-auto02.png"></p>
+<ul>
+<li>Note initally when I installed the nebula service on Windows I was using <code>-config .\dc-02.yaml</code> but received an error 1067 when trying to start the service.  Adding the full path to the config file resolved this issue.</li>
+</ul>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../setting-up-nebula-overlay-network/" rel="prev" title="setting up nebula overlay network">Previous post</a>
+            </li>
+        </ul></nav></aside></article><footer id="footer"><p>Contents © 2020         <a href="mailto:info@techsec.me">TechSec</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         </p>
+            
+        </footer>
+</div>
+    </section><script src="../../assets/js/all-nocdn.js"></script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates --><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+    }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-156247465-1"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-156247465-1');
+</script>
+</body>
+</html>

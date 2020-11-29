@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TechSec.me (Posts about zabbix)</title><link>https://techsec.me/</link><description></description><atom:link href="https://techsec.me/categories/zabbix.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:info@techsec.me"&gt;TechSec&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Mar 2020 17:33:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>zabbix 4 server installation</title><link>https://techsec.me/home/zabbix-4-server-installation/</link><dc:creator>TechSec</dc:creator><description>&lt;div&gt;&lt;h6&gt;Zabbix is a great monitoring solution and is ideal for environments where you might not be adding devices all that often such as SMEs.  What I mean by this is it's simple to add devices via the GUI, where as with a solution like Nagios with it's config file management it can be a bit time consuming especially if you don't interact with the config on a regular basis.&lt;/h6&gt;
+&lt;p&gt;I plan to do a few quick guides around Zabbix, my aim is to install it and configure it to monitor a few servers and services I have running so each quick guide will build on top of the other.  First up is the install procedure, I'm using a Ubuntu 19.10 Server VM as the OS (40GB disk, 2GB RAM, 1vCPU).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Stage 1: System Install.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Starting with a clean install of Ubuntu 19.10 and ran updates we can then look at the Zabbix &lt;a href="https://www.zabbix.com/documentation/current/manual/installation/requirements" title="Zabbix system requirements"&gt;system requirements&lt;/a&gt;.  Current version at time of writing is 4.4 and I'll install with MariaDB and Apache.&lt;/p&gt;
+&lt;p&gt;Install MariaDB and configure:&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;sudo apt install mariadb-server
+sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; mariadb
+sudo systemctl start mariadb
+
+&lt;span class="c1"&gt;# We run this to set a root password and remove root remote access etc.&lt;/span&gt;
+sudo mysql_secure_installation
+&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;a href="https://techsec.me/home/zabbix-4-server-installation/"&gt;Read more…&lt;/a&gt; (5 min remaining to read)&lt;/p&gt;&lt;/div&gt;</description><category>linux</category><category>monitoring</category><category>sysadmin</category><category>zabbix</category><guid>https://techsec.me/home/zabbix-4-server-installation/</guid><pubDate>Sun, 01 Mar 2020 22:03:44 GMT</pubDate></item></channel></rss>

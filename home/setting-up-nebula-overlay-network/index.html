@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>setting up nebula overlay network | TechSec.me</title>
+<link href="https://fonts.googleapis.com/css?family=Bitter:400,400i,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#517850">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://techsec.me/home/setting-up-nebula-overlay-network/">
+<!--[if lt IE 9]><script src="../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="TechSec">
+<link rel="prev" href="../zabbix-4-server-installation/" title="zabbix 4 server installation" type="text/html">
+<link rel="next" href="../run-nebula-as-a-service/" title="run nebula as a service" type="text/html">
+<meta property="og:site_name" content="TechSec.me">
+<meta property="og:title" content="setting up nebula overlay network">
+<meta property="og:url" content="https://techsec.me/home/setting-up-nebula-overlay-network/">
+<meta property="og:description" content="I really like WireGuard as a fast, simple and secure VPN option.  Recently I have a requirement to be able to add and remove nodes to a VPN on a semi regular basis and as I do not have any sort of con">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-03-05T21:05:21Z">
+<meta property="article:tag" content="nebula">
+<meta property="article:tag" content="networking">
+<meta property="article:tag" content="sysadmin">
+<meta property="article:tag" content="vpn">
+</head>
+<body>
+    <a href="#page-content" class="sr-only sr-only-focusable">Skip to main content</a>
+    
+    <section class="social"><ul>
+<li><a href="../../index.html" title="Home"><i class="fa fa-home"></i></a></li>
+            <li><a href="../../archive.html" title="Archives"><i class="fa fa-folder-open"></i></a></li>
+            <li><a href="../../categories/index.html" title="Tags"><i class="fa fa-tags"></i></a></li>
+            <li><a href="../../rss.xml" title="RSS"><i class="fa fa-rss"></i></a></li>
+            <li><a href="https://techsec.me" title="About me"><i class="fa fa-user"></i></a></li>
+            <li><a href="https://twitter.com/TechSec_me" title="My Twitter"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://github.com/TechSec-me" title="My Github"><i class="fab fa-github"></i></a></li>
+    
+    
+
+        </ul></section><section class="page-content"><div class="content" rel="main">
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">setting up nebula overlay network</a></h1>
+
+        <div class="metadata">
+            <p class="dateline"><a href="." rel="bookmark"><i class="fa fa-clock"></i> <time class="published dt-published" datetime="2020-03-05T21:05:21Z" itemprop="datePublished" title="2020-03-05 21:05">2020-03-05 21:05</time></a></p>
+            <p class="byline author vcard"> <i class="fa fa-user"></i> <span class="byline-name fn" itemprop="author">
+                    TechSec
+            </span></p>
+            
+        <p class="sourceline"><a href="index.md" class="sourcelink"><i class="fa fa-file-code"></i> Source</a></p>
+
+            
+
+            
+    <div class="tags">
+<h3 class="metadata-title">
+<i class="fa fa-tags"></i> Tags:</h3>
+        <ul itemprop="keywords" class="tags-ul">
+<li><a class="tag p-category" href="../../categories/nebula/" rel="tag">nebula</a></li>
+            <li><a class="tag p-category" href="../../categories/networking/" rel="tag">networking</a></li>
+            <li><a class="tag p-category" href="../../categories/sysadmin/" rel="tag">sysadmin</a></li>
+            <li><a class="tag p-category" href="../../categories/vpn/" rel="tag">vpn</a></li>
+        </ul>
+</div>
+
+        </div>
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<h6>I really like WireGuard as a fast, simple and secure VPN option.  Recently I have a requirement to be able to add and remove nodes to a VPN on a semi regular basis and as I do not have any sort of config manager in place (yet!) I need an option that doesn't require making changes on all existing nodes.  Nebula (from the people that brought you Slack) is one such option and below is how I've set it up, it's great in that I can add a node, do the bit of work I need to do with it then remove it a few weeks later and I don't need to make config changes on all the other nodes.</h6>
+<p><strong>Stage 1: Setup Nebula</strong></p>
+<p><a href="https://github.com/slackhq/nebula" title="Nebula - GitHub Link">Nebula is provided as source</a> or as <a href="https://github.com/slackhq/nebula/releases" title="Nebula - Binaries">downloadable binaries</a>, there is no pre-built package or installer yet so for the initial setup I'll be configuring three nodes, a Linux VM with a public IP (Nebula refer to this as a Lighthouse) and two internal VMs behind NAT, one Windows Server at home and a Linux VM on a laptop.</p>
+<ul>
+<li>srv1 - 192.168.99.100 (VPS with WAN IP, Lighthouse)</li>
+<li>ka-01 - 192.168.99.101 (Local VM on NAT)</li>
+<li>dc-01 - 192.168.99.150 (Local VM on NAT)</li>
+</ul>
+<!-- TEASER_END --><p>For my setup I will generate all certs and store the CA certificate using my laptop which for now at least will not be part of the new network.  Obviously store the CA cert somewhere safe.</p>
+<p>On each node, download and extract the relevant binary then set it up as:</p>
+<pre class="code literal-block"><span></span>sudo mkdir /etc/nebula
+sudo mkdir /etc/nebula/certs
+sudo chmod <span class="m">600</span> /etc/nebula/certs
+sudo cp ~/Downloads/nebula /etc/nebula/
+</pre>
+
+
+<p><img alt="" src="neb01.png"></p>
+<p><strong>Stage 2: Generate our certs from the chosen CA machine.</strong></p>
+<p>Now we need to generate our certificates for any nodes that will be in the overlay network.  In my case I'm using a seperate computer to generate the certificates and I'll copy them over to each node.  This should make it easy when adding additional nodes in the future plus it gives me a single location for all my certs I need to secure and backup.</p>
+<pre class="code literal-block"><span></span>./nebula-cert ca -name <span class="s2">"TechSec.me"</span>
+./nebula-cert sign -name <span class="s2">"srv1"</span> -ip <span class="s2">"192.168.99.100/24"</span>
+./nebula-cert sign -name <span class="s2">"ka-01"</span> -ip <span class="s2">"192.168.99.101/24"</span>
+./nebula-cert sign -name <span class="s2">"dc-01"</span> -ip <span class="s2">"192.168.99.150/24"</span>
+</pre>
+
+
+<p><img alt="" src="neb02.png"></p>
+<p><strong>Stage 3: Setup our nodes and connect.</strong></p>
+<p>For each node we now need to download a few items:</p>
+<ul>
+<li>The Nebula binary file <a href="https://github.com/slackhq/nebula/releases" title="Nebula Binaries - GitHub">available here</a>.</li>
+<li>The config file <a href="https://github.com/slackhq/nebula#5-configuration-files-for-each-host" title="Nebula Config File - GitHub">sample config available here</a> which we will adjust as necessary.</li>
+<li>The respective certs generated in the previous step (ca.crt, device.crt and device.key for the respective node).</li>
+</ul>
+<p>We then fire up the connection from the folder containing the config files and certs using the command below.</p>
+<pre class="code literal-block"><span></span>sudo ./nebula -config ka-01-config.yaml
+
+$ ping <span class="m">192</span>.168.99.100
+PING <span class="m">192</span>.168.99.100 <span class="o">(</span><span class="m">192</span>.168.99.100<span class="o">)</span> <span class="m">56</span><span class="o">(</span><span class="m">84</span><span class="o">)</span> bytes of data.
+<span class="m">64</span> bytes from <span class="m">192</span>.168.99.100: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">4</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span><span class="m">265</span> ms
+<span class="m">64</span> bytes from <span class="m">192</span>.168.99.100: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">5</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span><span class="m">55</span>.0 ms
+<span class="m">64</span> bytes from <span class="m">192</span>.168.99.100: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">6</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span><span class="m">50</span>.1 ms
+<span class="m">64</span> bytes from <span class="m">192</span>.168.99.100: <span class="nv">icmp_seq</span><span class="o">=</span><span class="m">7</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nv">time</span><span class="o">=</span><span class="m">48</span>.9 ms
+</pre>
+
+
+<ul>
+<li>You will probably get an error when running nebula on Windows similar to: Failed to find the tap device in the registry.  The quickest way around this I found was to install OpenVPN.  Note these minimal install setting worked for me:</li>
+</ul>
+<p><img alt="" src="neb03.png"></p>
+<ul>
+<li>Note once I'm happy with the system and process around adding new nodes I'll set these up to start automatically.  In Version 1.1 the developers have added a <code>-service</code> option to automatically add a service for Windows and OSX and we can set something similar up for our Linux machines.</li>
+<li>Note logging is your friend, set it to <code>debug</code> if you're running into trouble, this helped me pinpoint a config error in my .yaml config file. Kudos to the developers too who are very responsive over on <a href="https://github.com/slackhq/nebula">GitHub</a>
+</li>
+</ul>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../zabbix-4-server-installation/" rel="prev" title="zabbix 4 server installation">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../run-nebula-as-a-service/" rel="next" title="run nebula as a service">Next post</a>
+            </li>
+        </ul></nav></aside></article><footer id="footer"><p>Contents © 2020         <a href="mailto:info@techsec.me">TechSec</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         </p>
+            
+        </footer>
+</div>
+    </section><script src="../../assets/js/all-nocdn.js"></script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates --><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+    }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-156247465-1"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-156247465-1');
+</script>
+</body>
+</html>
